@@ -1,0 +1,130 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">People</h1>
+      <p class="page-subtitle">Everyone at ACME and what they are paid. Select a person to see their salary history and how they compare with peers.</p>
+    </div>
+    <div class="page-actions">
+      <a class="p-button p-button-outlined p-button-secondary export" [href]="exportUrl()" download>
+        <i class="pi pi-download" aria-hidden="true"></i> Export CSV
+      </a>
+      <p-button label="Add employee" icon="pi pi-plus" (onClick)="startCreate()" />
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="toolbar" role="search">
+      <p-iconfield class="search">
+        <p-inputicon styleClass="pi pi-search" />
+        <input #searchBox pInputText type="search" [ngModel]="searchText()" (ngModelChange)="onSearch($event)"
+               placeholder="Search name, email or ID" aria-label="Search people" autocomplete="off" />
+        <kbd class="shortcut" aria-hidden="true">/</kbd>
+      </p-iconfield>
+
+      <p-select [options]="countryOptions()" optionLabel="label" optionValue="value" [ngModel]="query().country"
+                (ngModelChange)="setFilter('country', $event)" placeholder="All countries" [showClear]="true"
+                ariaLabel="Filter by country" styleClass="filter" />
+      <p-select [options]="reference()?.departments ?? []" [ngModel]="query().department"
+                (ngModelChange)="setFilter('department', $event)" placeholder="All departments" [showClear]="true"
+                ariaLabel="Filter by department" styleClass="filter" />
+      <p-select [options]="reference()?.jobTitles ?? []" [ngModel]="query().jobTitle" [filter]="true"
+                (ngModelChange)="setFilter('jobTitle', $event)" placeholder="All job titles" [showClear]="true"
+                ariaLabel="Filter by job title" styleClass="filter filter-wide" />
+
+      <div class="toolbar-end">
+        @if (hasFilters()) {
+          <button type="button" class="link-button" (click)="clearFilters()">Clear filters</button>
+        }
+        <span class="count" aria-live="polite">
+          @if (results().status === 'loaded') {
+            {{ total().toLocaleString('en-US') }} {{ total() === 1 ? 'person' : 'people' }}
+          }
+        </span>
+      </div>
+    </div>
+
+    <p-table
+      [value]="rows()"
+      [lazy]="true"
+      (onLazyLoad)="onLazyLoad($event)"
+      [paginator]="true"
+      [rows]="query().size"
+      [first]="query().page * query().size"
+      [totalRecords]="total()"
+      [rowsPerPageOptions]="[25, 50, 100]"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first}–{last} of {totalRecords}"
+      [sortField]="sortField()"
+      [sortOrder]="sortOrder()"
+      [loading]="loading()"
+      [showLoader]="false"
+      dataKey="id"
+      styleClass="people-table"
+      [class.is-loading]="loading()"
+    >
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
+          <th pSortableColumn="jobTitle">Job title <p-sortIcon field="jobTitle" /></th>
+          <th pSortableColumn="department" class="hide-md">Department <p-sortIcon field="department" /></th>
+          <th pSortableColumn="country">Country <p-sortIcon field="country" /></th>
+          <th pSortableColumn="salary" class="num" title="Sorted by USD equivalent, so different currencies compare fairly">
+            Annual salary <p-sortIcon field="salary" />
+          </th>
+          <th pSortableColumn="hireDate" class="num hide-md">Hired <p-sortIcon field="hireDate" /></th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-row>
+        <tr class="is-clickable" [class.is-selected]="row.id === openEmployeeId()" tabindex="0"
+            (click)="openEmployee(row.id)" (keydown.enter)="openEmployee(row.id)">
+          <td>
+            <span class="person">
+              <app-initials-avatar [name]="row.fullName" />
+              <span class="person-text">
+                <span class="person-name">{{ row.fullName }}</span>
+                <span class="sub">{{ row.email }}</span>
+              </span>
+            </span>
+          </td>
+          <td>{{ row.jobTitle }}</td>
+          <td class="hide-md">{{ row.department }}</td>
+          <td><span class="code-tag" [title]="row.countryName">{{ row.countryCode }}</span> <span class="hide-sm">{{ row.countryName }}</span></td>
+          <td class="num">
+            <span class="salary">{{ row.annualSalary | money: row.currencyCode }}</span>
+            @if (row.currencyCode !== 'USD') {
+              <span class="sub">{{ row.annualSalaryUsd | usd }}</span>
+            }
+          </td>
+          <td class="num hide-md">{{ row.hireDate | day }}</td>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="6">
+            <div class="empty">
+              @if (results().status === 'error') {
+                <strong>People could not be loaded.</strong>
+                <span>The server may be restarting. Reload the page in a moment.</span>
+              } @else if (results().status === 'loaded') {
+                <strong>No one matches these filters.</strong>
+                @if (hasFilters()) {
+                  <button type="button" class="link-button" (click)="clearFilters()">Clear filters</button>
+                }
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+</div>
+
+<app-employee-panel
+  [employeeId]="openEmployeeId()"
+  [creating]="creating()"
+  (closed)="closePanel()"
+  (saved)="onSaved($event)"
+  (deleted)="onDeleted()"
+/>

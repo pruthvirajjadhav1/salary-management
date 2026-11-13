@@ -1,0 +1,101 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <fieldset class="group">
+    <legend>Person</legend>
+
+    <div class="field">
+      <label for="fullName">Full name</label>
+      <input pInputText id="fullName" formControlName="fullName" autocomplete="off" [attr.aria-invalid]="!!errorFor('fullName')" />
+      @if (errorFor('fullName'); as error) { <small class="error">{{ error }}</small> }
+    </div>
+
+    <div class="field">
+      <label for="email">Work email</label>
+      <input pInputText id="email" type="email" formControlName="email" autocomplete="off" [attr.aria-invalid]="!!errorFor('email')" />
+      @if (errorFor('email'); as error) { <small class="error">{{ error }}</small> }
+    </div>
+  </fieldset>
+
+  <fieldset class="group">
+    <legend>Role</legend>
+
+    <div class="field">
+      <label for="jobTitle">Job title</label>
+      <p-autocomplete inputId="jobTitle" formControlName="jobTitle" [suggestions]="titleSuggestions()" (completeMethod)="suggestTitles($event)"
+                      [dropdown]="true" [forceSelection]="false" appendTo="body" [fluid]="true" />
+      <small class="hint">Pick an existing title where possible, so pay statistics group correctly.</small>
+      @if (errorFor('jobTitle'); as error) { <small class="error">{{ error }}</small> }
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="department">Department</label>
+        <p-autocomplete inputId="department" formControlName="department" [suggestions]="departmentSuggestions()"
+                        (completeMethod)="suggestDepartments($event)" [dropdown]="true" appendTo="body" [fluid]="true" />
+        @if (errorFor('department'); as error) { <small class="error">{{ error }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="hireDate">Hire date</label>
+        <p-datepicker inputId="hireDate" formControlName="hireDate" dateFormat="d M yy" [showIcon]="true" iconDisplay="input"
+                      appendTo="body" [fluid]="true" />
+        @if (errorFor('hireDate'); as error) { <small class="error">{{ error }}</small> }
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="group">
+    <legend>Pay</legend>
+
+    <div class="row">
+      <div class="field">
+        <label for="countryCode">Country</label>
+        <p-select inputId="countryCode" formControlName="countryCode" [options]="countries()" optionLabel="name" optionValue="code"
+                  placeholder="Select a country" appendTo="body" [fluid]="true" />
+        @if (errorFor('countryCode'); as error) { <small class="error">{{ error }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="annualSalary">Annual base salary @if (currency()) { <span class="muted">({{ currency() }})</span> }</label>
+        <p-inputnumber inputId="annualSalary" formControlName="annualSalary" [prefix]="salaryPrefix()" [maxFractionDigits]="0"
+                       [locale]="currency() === 'INR' ? 'en-IN' : 'en-US'" [fluid]="true" />
+        @if (errorFor('annualSalary'); as error) { <small class="error">{{ error }}</small> }
+      </div>
+    </div>
+
+    @if (payChanged()) {
+      <div class="pay-change" role="group" aria-labelledby="pay-change-title">
+        <p class="pay-change-title" id="pay-change-title">
+          <i class="pi pi-history" aria-hidden="true"></i>
+          This is a pay change: {{ payChangeSummary() }}
+        </p>
+        <p class="hint">It is added to the salary history; the previous salary is kept.</p>
+
+        <div class="row">
+          <div class="field">
+            <label for="salaryEffectiveDate">Effective from</label>
+            <p-datepicker inputId="salaryEffectiveDate" formControlName="salaryEffectiveDate" dateFormat="d M yy" [showIcon]="true"
+                          iconDisplay="input" appendTo="body" [fluid]="true" />
+            @if (errorFor('salaryEffectiveDate'); as error) { <small class="error">{{ error }}</small> }
+          </div>
+          <div class="field">
+            <label for="salaryChangeReason">Reason <span class="muted">(optional)</span></label>
+            <input pInputText id="salaryChangeReason" formControlName="salaryChangeReason" autocomplete="off" />
+            @if (errorFor('salaryChangeReason'); as error) { <small class="error">{{ error }}</small> }
+          </div>
+        </div>
+        <div class="reasons" aria-label="Common reasons">
+          @for (reason of reasons; track reason) {
+            <button type="button" class="reason" [class.is-active]="form.controls.salaryChangeReason.value === reason" (click)="useReason(reason)">
+              {{ reason }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </fieldset>
+
+  <div class="form-actions">
+    <p-button type="submit" [label]="isEdit() ? 'Save changes' : 'Add employee'" [loading]="saving()" />
+    <p-button type="button" label="Cancel" severity="secondary" [text]="true" (onClick)="cancel.emit()" [disabled]="saving()" />
+  </div>
+</form>

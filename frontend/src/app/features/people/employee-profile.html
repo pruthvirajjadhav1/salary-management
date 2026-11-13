@@ -1,0 +1,85 @@
+@let e = employee();
+
+<header class="identity">
+  <app-initials-avatar [name]="e.fullName" size="large" />
+  <div class="identity-text">
+    <h2 class="name">{{ e.fullName }}</h2>
+    <p class="role">{{ e.jobTitle }} · {{ e.department }}</p>
+    <p class="where"><span class="code-tag">{{ e.countryCode }}</span> {{ e.countryName }} · Employee #{{ e.id }}</p>
+  </div>
+</header>
+
+<div class="actions">
+  <p-button label="Edit" icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" (onClick)="edit.emit()" />
+  <p-button label="Remove" icon="pi pi-trash" severity="danger" [text]="true" size="small" (onClick)="remove.emit()" />
+</div>
+
+<section class="section" aria-labelledby="pay-heading">
+  <h3 class="section-title" id="pay-heading">Pay</h3>
+  <div class="salary-line">
+    <span class="salary">{{ e.annualSalary | money: e.currencyCode }}</span>
+    <span class="per">per year</span>
+  </div>
+  @if (e.currencyCode !== 'USD') {
+    <p class="salary-usd">{{ e.annualSalaryUsd | usd }} at the reference rate</p>
+  }
+
+  @if (peers(); as p) {
+    <div class="peers">
+      <div class="peers-head">
+        <span class="compa" [attr.data-band]="p.position.band">
+          {{ bandCopy() }} · compa-ratio {{ p.position.compaRatio.toFixed(2) }}
+        </span>
+      </div>
+      <app-pay-band [stats]="p.peers" [domain]="peerDomain()" [marker]="e.annualSalary" size="large"
+                    [label]="peerLabel() + ' ' + bandCopy()" />
+      <div class="peer-scale">
+        <span>{{ p.peers.min | money: e.currencyCode }}<small>lowest</small></span>
+        <span class="center">{{ p.peers.median | money: e.currencyCode }}<small>median</small></span>
+        <span class="end">{{ p.peers.max | money: e.currencyCode }}<small>highest</small></span>
+      </div>
+      <p class="peer-note">{{ peerLabel() }}</p>
+      <app-band-legend [withMarker]="true" [markerLabel]="e.fullName.split(' ')[0]" />
+    </div>
+  }
+</section>
+
+<section class="section" aria-labelledby="history-heading">
+  <h3 class="section-title" id="history-heading">Salary history</h3>
+  <ol class="timeline">
+    @for (entry of history(); track entry.id; let first = $first) {
+      <li class="entry" [class.is-current]="first">
+        <span class="dot" aria-hidden="true"></span>
+        <div class="entry-main">
+          <span class="entry-amount">{{ entry.annualSalary | money: entry.currencyCode }}</span>
+          @if (entry.change) {
+            <span class="change" [attr.data-direction]="entry.direction">{{ entry.change }}</span>
+          }
+          @if (first) {
+            <span class="current-tag">Current</span>
+          }
+        </div>
+        <div class="entry-meta">
+          <span>{{ entry.reason ?? 'No reason recorded' }}</span>
+          <span>Effective {{ entry.effectiveDate | day }}</span>
+        </div>
+      </li>
+    }
+  </ol>
+</section>
+
+<section class="section" aria-labelledby="details-heading">
+  <h3 class="section-title" id="details-heading">Details</h3>
+  <dl class="details">
+    <dt>Email</dt>
+    <dd><a [href]="'mailto:' + e.email">{{ e.email }}</a></dd>
+    <dt>Hire date</dt>
+    <dd>{{ e.hireDate | day }} <span class="muted">· {{ tenure() }}</span></dd>
+    <dt>Department</dt>
+    <dd>{{ e.department }}</dd>
+    <dt>Country</dt>
+    <dd>{{ e.countryName }} <span class="muted">· paid in {{ e.currencyCode }}</span></dd>
+    <dt>Last updated</dt>
+    <dd>{{ e.updatedAt | day }}</dd>
+  </dl>
+</section>

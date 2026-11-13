@@ -62,7 +62,15 @@ docker build -t acme-pay .
 docker run -p 8080:8080 -v acme-pay-data:/data acme-pay     # http://localhost:8080
 ```
 
-Deploying to Fly.io (`fly.toml` is included):
+### Deploy free on Render
+
+`render.yaml` defines a free Docker web service. On render.com choose **New → Blueprint**, pick this repository, and apply. The first build takes a few minutes.
+
+Free-plan trade-offs: the service sleeps after about 15 minutes idle, so the first request takes 30–60 s. The disk is not persistent, so the database returns to the seeded 10,000 employees after each restart; edits made in the demo do not survive it.
+
+### Deploy on Fly.io (persistent volume, paid)
+
+`fly.toml` is included:
 
 ```bash
 fly launch --copy-config --no-deploy && fly volumes create salary_data --size 1 && fly deploy

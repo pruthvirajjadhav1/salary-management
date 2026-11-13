@@ -1,0 +1,14 @@
+# Render Blueprint: one free Docker web service.
+# The free plan has no persistent disk, so SQLite resets on every restart or redeploy;
+# the app reseeds the same 10,000 synthetic employees automatically when the database is empty.
+services:
+  - type: web
+    name: acme-salary-management
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    autoDeploy: true
+    envVars:
+      - key: APP_DATA_DIR
+        value: /data

@@ -86,7 +86,7 @@ erDiagram
 | Method | Path | Purpose |
 |---|---|---|
 | `GET` | `/api/employees?q=&country=&department=&jobTitle=&page=&size=&sort=` | Search, filter, sort, paginate |
-| `GET` | `/api/employees/export.csv?…same filters` | CSV of the filtered list |
+| `GET` | `/api/employees/export?…same filters` | CSV of the filtered list, in screen order |
 | `GET` | `/api/employees/{id}` | Employee with salary history and peer comparison |
 | `POST` | `/api/employees` | Create (also writes the first salary-history row) |
 | `PUT` | `/api/employees/{id}` | Update; a salary or country change appends history |

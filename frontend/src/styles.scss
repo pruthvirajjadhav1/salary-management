@@ -1,1 +1,330 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@fontsource-variable/hanken-grotesk';
+@use 'primeicons/primeicons.css';
+
+:root {
+  /* Ink and lines */
+  --ink: #1f1c24;
+  --ink-2: #57515f;
+  --ink-3: #7c7685;
+  --line: #e7e3ea;
+  --line-strong: #d6d0db;
+
+  /* Grounds */
+  --canvas: #f7f6f8;
+  --surface: #ffffff;
+  --surface-sunken: #faf9fb;
+
+  /* Brand */
+  --plum-900: #2a1430;
+  --plum-700: #572654;
+  --plum-600: #6c3168;
+  --plum-100: #efdcef;
+  --plum-50: #f8f1f8;
+  --on-plum: #f4eaf3;
+  --on-plum-muted: #c2adc2;
+  --amber: #f0b43c;
+  --amber-ink: #7a4f00;
+  --amber-50: #fdf3df;
+
+  /* State */
+  --positive: #1d7348;
+  --positive-50: #e7f4ec;
+  --negative: #b42318;
+  --negative-50: #fdeceb;
+
+  /* Pay band */
+  --band-track: #e2dde6;
+  --band-iqr: #d9c2da;
+  --band-median: var(--plum-600);
+
+  --font: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --page-gutter: 2rem;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--canvas);
+  font-feature-settings: 'tnum' 1, 'cv11' 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--plum-100);
+  color: var(--plum-900);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+a {
+  color: var(--plum-600);
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--plum-600);
+  outline-offset: 2px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+/* ---------- Page scaffolding shared by every screen ---------- */
+
+.page {
+  padding: 1.75rem var(--page-gutter) 3rem;
+  max-width: 1440px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.375rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.page-subtitle {
+  margin: 0.375rem 0 0;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+}
+
+.page-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+
+  a {
+    color: var(--ink-2);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--plum-600);
+      text-decoration: underline;
+    }
+  }
+
+  .pi {
+    font-size: 0.625rem;
+  }
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-title {
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+
+.panel-note {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+/* One horizontal strip of figures, divided by hairlines (not a grid of cards). */
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.summary-cell {
+  padding: 0.875rem 1.125rem 0.9375rem;
+  border-left: 1px solid var(--line);
+  margin-left: -1px;
+
+  dt {
+    font-size: 0.75rem;
+    font-weight: 550;
+    color: var(--ink-2);
+  }
+
+  dd {
+    margin: 0.25rem 0 0;
+    font-size: 1.375rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .summary-detail {
+    display: block;
+    margin-top: 0.1875rem;
+    font-size: 0.75rem;
+    font-weight: 450;
+    letter-spacing: 0;
+    color: var(--ink-3);
+  }
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--ink-3);
+}
+
+.sub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.code-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.875rem;
+  height: 1.25rem;
+  padding: 0 0.3125rem;
+  border-radius: 4px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- PrimeNG table, tuned for dense HR data ---------- */
+
+.p-datatable {
+  font-size: 0.8125rem;
+
+  .p-datatable-thead > tr > th {
+    background: var(--surface-sunken);
+    color: var(--ink-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5625rem 0.75rem;
+    border-color: var(--line);
+    white-space: nowrap;
+  }
+
+  .p-datatable-tbody > tr > td {
+    padding: 0.5625rem 0.75rem;
+    border-color: var(--line);
+  }
+
+  .p-datatable-tbody > tr.is-clickable {
+    cursor: pointer;
+  }
+
+  .p-datatable-tbody > tr.is-clickable:hover > td {
+    background: var(--surface-sunken);
+  }
+
+  .p-datatable-tbody > tr.is-selected > td {
+    background: var(--amber-50);
+  }
+
+  .p-datatable-paginator-bottom {
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .p-sortable-column-icon {
+    width: 0.6875rem;
+    height: 0.6875rem;
+  }
+}
+
+.p-paginator {
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.p-button {
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+
+.p-toast {
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --page-gutter: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

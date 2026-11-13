@@ -7,7 +7,52 @@ Salary management for an HR manager at a 10,000-person company in 8 countries. I
 
 **Live demo:** https://acme-salary-management-6h46.onrender.com (synthetic data; on Render's free tier the first request after idle can take ~30–60 s while the service wakes, and the database reseeds itself after a restart)
 
-**Stack:** Spring Boot 4.1 (Java 21) · SQLite + Flyway · Angular 21 + PrimeNG 21 · Docker / Fly.io
+**Stack:** Spring Boot 4.1 (Java 21) · SQLite + Flyway · Angular 21 + PrimeNG 21 · Docker (Render / Fly.io)
+
+![Pay overview: headcount, payroll and median in USD, every country's pay range on one scale, payroll by department](docs/screenshots/pay-overview.png)
+
+## Screenshots
+
+| Country breakdown, in local currency | Employee profile: peer band, compa-ratio and salary history |
+|---|---|
+| ![India: pay statistics per job title in rupees](docs/screenshots/country-india.png) | ![Profile drawer with peer comparison and salary history](docs/screenshots/employee-profile.png) |
+
+**People directory.** Search, filters, sorting and paging are all kept in the URL.
+
+![Directory filtered to India, sorted by salary](docs/screenshots/people-directory.png)
+
+## Architecture
+
+```mermaid
+flowchart LR
+    HR([HR manager<br/>browser]) -->|HTTPS| SPA
+
+    subgraph Container["One Docker container"]
+        direction LR
+        SPA["Angular 21 SPA<br/>PrimeNG · static files"]
+        subgraph API["Spring Boot 4.1 · Java 21"]
+            direction TB
+            C["REST controllers<br/>/api/employees · /api/insights · /api/reference"]
+            S["Services<br/>EmployeeService · InsightsService"]
+            P["Pure domain<br/>SalaryStatistics · PayPosition"]
+            R["Repositories<br/>JdbcClient + SQL"]
+            G["Seeder<br/>deterministic 10k employees"]
+        end
+        DB[("SQLite<br/>employee · salary_change · country<br/>Flyway migrations")]
+    end
+
+    SPA -->|JSON / problem+json| C
+    C --> S --> R --> DB
+    S --> P
+    G -->|first boot, if empty| R
+```
+
+- **One deployable.** Spring Boot serves both the API and the built Angular app, so there's one URL, no CORS and one thing to run. The UI and API keep separate source folders, builds and tests.
+- **Current salary on `employee`, every change in `salary_change`.** The directory and insights read one table, and history is never overwritten.
+- **Statistics in plain Java.** SQLite has no portable median or percentile function. A pure, unit-tested class matches Excel's `PERCENTILE.INC`, so HR's numbers reconcile.
+- **Money stays in local currency.** Cross-country figures are converted at dated reference rates and always labelled "≈ USD".
+
+The full design, data model, API and trade-offs are in [docs/03-architecture.md](docs/03-architecture.md).
 
 ## Start here
 

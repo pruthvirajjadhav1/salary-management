@@ -8,9 +8,11 @@ import java.nio.file.Path;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ApplicationListener;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class SalaryManagementApplication {
 
 	public static void main(String[] args) {

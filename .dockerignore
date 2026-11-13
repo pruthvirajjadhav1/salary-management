@@ -1,0 +1,9 @@
+**/node_modules
+**/dist
+**/.angular
+backend/target
+backend/data
+.git
+.claude
+.impeccable
+docs

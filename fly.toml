@@ -1,0 +1,33 @@
+# Fly.io: one small machine with a 1 GB volume for the SQLite file.
+# The database seeds itself with 10,000 synthetic employees on first boot.
+app = "acme-salary-management"
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  APP_DATA_DIR = "/data"
+
+[mounts]
+  source = "salary_data"
+  destination = "/data"
+  initial_size = "1gb"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "30s"
+    timeout = "5s"
+    method = "GET"
+    path = "/actuator/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

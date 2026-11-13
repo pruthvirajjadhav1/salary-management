@@ -5,6 +5,8 @@ Salary management for an HR manager at a 10,000-person company in 8 countries. I
 - **one place to maintain salaries**, where every change keeps its effective date and reason;
 - **answers to "how do we pay people?" in two clicks**: min, median, average and max by country and by job title, payroll in USD, and each person's position against their peers.
 
+**Live demo:** https://acme-salary-management-6h46.onrender.com (synthetic data; on Render's free tier the first request after idle can take ~30–60 s while the service wakes, and the database reseeds itself after a restart)
+
 **Stack:** Spring Boot 4.1 (Java 21) · SQLite + Flyway · Angular 21 + PrimeNG 21 · Docker / Fly.io
 
 ## Start here

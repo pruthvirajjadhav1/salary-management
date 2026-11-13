@@ -7,6 +7,8 @@ Salary management for an HR manager at a 10,000-person company in 8 countries. I
 
 **Live demo:** https://acme-salary-management-6h46.onrender.com (synthetic data; on Render's free tier the first request after idle can take ~30–60 s while the service wakes, and the database reseeds itself after a restart)
 
+**Demo video (1:49):** https://drive.google.com/file/d/1r2gul-2Q3JZN5Rj66I_Mz4EAxbwmUa4X/view?usp=sharing
+
 **Stack:** Spring Boot 4.1 (Java 21) · SQLite + Flyway · Angular 21 + PrimeNG 21 · Docker (Render / Fly.io)
 
 ![Pay overview: headcount, payroll and median in USD, every country's pay range on one scale, payroll by department](docs/screenshots/pay-overview.png)

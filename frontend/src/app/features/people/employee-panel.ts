@@ -78,9 +78,9 @@ type Mode = 'view' | 'edit' | 'create';
       padding: 1rem 1.25rem 0.5rem;
     }
     :host ::ng-deep .employee-drawer .p-drawer-title {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--ink-3);
+      font-size: 1rem;
+      font-weight: 650;
+      color: var(--ink);
     }
     :host ::ng-deep .employee-drawer .p-drawer-content {
       padding: 0.25rem 1.25rem 1.25rem;
@@ -120,9 +120,9 @@ export class EmployeePanel {
       case 'create':
         return 'New employee';
       case 'edit':
-        return 'Edit employee';
+        return `Edit ${this.details()?.fullName ?? 'employee'}`;
       default:
-        return 'Employee profile';
+        return '';
     }
   });
 

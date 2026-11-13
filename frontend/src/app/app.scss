@@ -89,16 +89,6 @@
     background: rgb(255 255 255 / 0.1);
     color: #fff;
 
-    &::before {
-      content: '';
-      position: absolute;
-      left: -0.75rem;
-      top: 0.5rem;
-      bottom: 0.5rem;
-      width: 3px;
-      border-radius: 0 3px 3px 0;
-      background: var(--amber);
-    }
   }
 }
 
@@ -143,7 +133,4 @@
     margin-left: auto;
   }
 
-  .nav-item.is-active::before {
-    display: none;
-  }
 }

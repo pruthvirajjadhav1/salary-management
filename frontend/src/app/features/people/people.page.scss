@@ -1,5 +1,7 @@
 .export {
   text-decoration: none;
+  color: var(--ink-2);
+  border-color: var(--line-strong);
   gap: 0.5rem;
 }
 
@@ -115,7 +117,8 @@
 }
 
 @media (max-width: 640px) {
-  .hide-sm {
+  .hide-sm,
+  .hide-xs {
     display: none;
   }
 

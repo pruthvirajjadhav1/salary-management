@@ -65,7 +65,7 @@
       <ng-template #header>
         <tr>
           <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
-          <th pSortableColumn="jobTitle">Job title <p-sortIcon field="jobTitle" /></th>
+          <th pSortableColumn="jobTitle" class="hide-xs">Job title <p-sortIcon field="jobTitle" /></th>
           <th pSortableColumn="department" class="hide-md">Department <p-sortIcon field="department" /></th>
           <th pSortableColumn="country">Country <p-sortIcon field="country" /></th>
           <th pSortableColumn="salary" class="num" title="Sorted by USD equivalent, so different currencies compare fairly">
@@ -87,7 +87,7 @@
               </span>
             </span>
           </td>
-          <td>{{ row.jobTitle }}</td>
+          <td class="hide-xs">{{ row.jobTitle }}</td>
           <td class="hide-md">{{ row.department }}</td>
           <td><span class="code-tag" [title]="row.countryName">{{ row.countryCode }}</span> <span class="hide-sm">{{ row.countryName }}</span></td>
           <td class="num">

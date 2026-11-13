@@ -118,6 +118,10 @@
 }
 
 @media (max-width: 640px) {
+  .hide-xs {
+    display: none;
+  }
+
   .band-col {
     min-width: 7rem;
   }

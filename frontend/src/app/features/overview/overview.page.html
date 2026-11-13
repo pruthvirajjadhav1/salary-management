@@ -51,7 +51,7 @@
         </div>
         <div class="summary-cell">
           <dt>Average salary</dt>
-          <dd>{{ data.overview.averageSalaryUsd | usd }}<span class="summary-detail">pulled up by the highest earners</span></dd>
+          <dd>{{ data.overview.averageSalaryUsd | usd }}<span class="summary-detail">{{ (data.overview.averageSalaryUsd ?? 0) > (data.overview.medianSalaryUsd ?? 0) ? 'above the median: a few high earners pull it up' : 'mean of every salary' }}</span></dd>
         </div>
       </dl>
 
@@ -69,10 +69,10 @@
             <ng-template #header>
               <tr>
                 <th>Country</th>
-                <th class="num">People</th>
+                <th class="num hide-xs">People</th>
                 <th class="band-col">Salary range <span class="muted">(≈ USD)</span></th>
                 <th class="num">Median</th>
-                <th class="num">Payroll</th>
+                <th class="num hide-xs">Payroll</th>
               </tr>
             </ng-template>
             <ng-template #body let-row>
@@ -87,7 +87,7 @@
                     </span>
                   </span>
                 </td>
-                <td class="num">{{ row.salary.headcount.toLocaleString('en-US') }}</td>
+                <td class="num hide-xs">{{ row.salary.headcount.toLocaleString('en-US') }}</td>
                 <td class="band-col" [pTooltip]="row.tooltip" tooltipPosition="top">
                   <app-pay-band [stats]="row.usdBand" [domain]="domain()" [label]="row.countryName + ': ' + row.tooltip" />
                 </td>
@@ -97,16 +97,16 @@
                     <span class="sub">{{ row.medianSalaryUsd | usd }}</span>
                   }
                 </td>
-                <td class="num">{{ row.totalPayrollUsd | usd: true }}</td>
+                <td class="num hide-xs">{{ row.totalPayrollUsd | usd: true }}</td>
               </tr>
             </ng-template>
             <ng-template #footer>
               <tr class="axis-row">
-                <td colspan="2"></td>
+                <td class="hide-xs"></td><td></td>
                 <td class="band-col">
                   <span class="axis"><span>{{ domain()[0] | money: 'USD': true }}</span><span>{{ domain()[1] | money: 'USD': true }}</span></span>
                 </td>
-                <td colspan="2"></td>
+                <td></td><td class="hide-xs"></td>
               </tr>
             </ng-template>
           </p-table>

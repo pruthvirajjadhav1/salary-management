@@ -5,7 +5,7 @@
   /* Ink and lines */
   --ink: #1f1c24;
   --ink-2: #57515f;
-  --ink-3: #7c7685;
+  --ink-3: #6a6472;
   --line: #e7e3ea;
   --line-strong: #d6d0db;
 
@@ -33,8 +33,8 @@
   --negative-50: #fdeceb;
 
   /* Pay band */
-  --band-track: #e2dde6;
-  --band-iqr: #d9c2da;
+  --band-track: #948d9c;
+  --band-iqr: #c9a5c8;
   --band-median: var(--plum-600);
 
   --font: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -153,12 +153,13 @@ a {
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   min-width: 0;
 }
 
 .panel-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -179,10 +180,10 @@ a {
 /* One horizontal strip of figures, divided by hairlines (not a grid of cards). */
 .summary-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   margin-bottom: 1.25rem;
   overflow: hidden;
 }

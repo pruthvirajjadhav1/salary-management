@@ -17,6 +17,7 @@ Salary management for an HR manager at a 10,000-person company in 8 countries. I
 | [docs/04-testing.md](docs/04-testing.md) | Testing strategy, 94 tests across both layers |
 | [docs/05-performance.md](docs/05-performance.md) | Measured timings at 10k employees, and what changes at 100k and 1M |
 | [docs/06-demo-script.md](docs/06-demo-script.md) | The path the demo video follows |
+| [docs/07-ai-workflow.md](docs/07-ai-workflow.md) | How AI tools were used, and the mistakes they made that tests and review caught |
 | [PRODUCT.md](PRODUCT.md) | Who the UI is for, and the product principles it follows |
 
 The commit history is meant to be read in order. It goes requirements → design → failing tests → implementation → UI → packaging.

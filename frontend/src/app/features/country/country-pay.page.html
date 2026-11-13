@@ -1,0 +1,116 @@
+<div class="page">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a routerLink="/overview">Pay overview</a>
+    <i class="pi pi-chevron-right" aria-hidden="true"></i>
+    <span aria-current="page">{{ data()?.country?.name ?? countryCode().toUpperCase() }}</span>
+  </nav>
+
+  @switch (view().state) {
+    @case ('missing') {
+      <h1 class="page-title">Country not found</h1>
+      <p class="page-subtitle">ACME does not employ anyone in “{{ countryCode() }}”. <a routerLink="/overview">Back to the pay overview</a>.</p>
+    }
+    @case ('error') {
+      <h1 class="page-title">Pay data could not be loaded</h1>
+      <p class="page-subtitle">The server may be restarting. Reload the page in a moment.</p>
+    }
+    @case ('loading') {
+      <p-skeleton width="12rem" height="1.75rem" />
+      <div class="panel loading-panel" aria-busy="true">
+        @for (row of skeletonRows; track $index) {
+          <p-skeleton height="1.75rem" />
+        }
+      </div>
+    }
+  }
+
+  @if (data(); as d) {
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">
+          {{ d.country.name }} <span class="code-tag currency-tag">{{ d.country.currencyCode }}</span>
+        </h1>
+        <p class="page-subtitle">Annual base salary in {{ d.country.currencyCode }}, by job title.</p>
+      </div>
+      <div class="page-actions">
+        <a class="p-button p-button-outlined p-button-sm people-link" [routerLink]="['/people']" [queryParams]="{ country: d.country.code }">
+          <i class="pi pi-users" aria-hidden="true"></i> View people in {{ d.country.name }}
+        </a>
+      </div>
+    </header>
+
+    @if (d.overall; as overall) {
+      <dl class="summary-strip">
+        <div class="summary-cell">
+          <dt>People</dt>
+          <dd>{{ overall.headcount.toLocaleString('en-US') }}<span class="summary-detail">in {{ d.jobTitles.length }} job titles</span></dd>
+        </div>
+        <div class="summary-cell">
+          <dt>Median salary</dt>
+          <dd>{{ overall.median | money: currency() }}<span class="summary-detail">{{ d.country.code === 'US' ? 'middle of the range' : (overall.median / d.country.unitsPerUsd | usd) }}</span></dd>
+        </div>
+        <div class="summary-cell">
+          <dt>Average salary</dt>
+          <dd>{{ overall.average | money: currency() }}<span class="summary-detail">mean of all salaries</span></dd>
+        </div>
+        <div class="summary-cell">
+          <dt>Lowest – highest</dt>
+          <dd class="range-figure">{{ overall.min | money: currency(): true }} – {{ overall.max | money: currency(): true }}</dd>
+        </div>
+        <div class="summary-cell">
+          <dt>Annual payroll</dt>
+          <dd>{{ overall.total | money: currency(): true }}<span class="summary-detail">{{ payrollUsd() | usd: true }}</span></dd>
+        </div>
+      </dl>
+
+      <section class="panel" aria-labelledby="by-title">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title" id="by-title">Pay by job title</h2>
+            <p class="panel-note">Select a job title to see the people in it.</p>
+          </div>
+          <div class="panel-tools">
+            <app-band-legend />
+            <p-select [options]="departments()" [ngModel]="department()" (ngModelChange)="department.set($event)"
+                      placeholder="All departments" [showClear]="true" size="small" ariaLabel="Filter by department" />
+          </div>
+        </div>
+
+        <p-table [value]="rows()" sortField="median" [sortOrder]="-1" [rowHover]="true">
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="jobTitle">Job title <p-sortIcon field="jobTitle" /></th>
+              <th pSortableColumn="headcount" class="num">People <p-sortIcon field="headcount" /></th>
+              <th class="band-col">Salary range</th>
+              <th pSortableColumn="median" class="num">Median <p-sortIcon field="median" /></th>
+              <th pSortableColumn="average" class="num">Average <p-sortIcon field="average" /></th>
+              <th pSortableColumn="min" class="num hide-sm">Min <p-sortIcon field="min" /></th>
+              <th pSortableColumn="max" class="num hide-sm">Max <p-sortIcon field="max" /></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-row>
+            <tr class="is-clickable" tabindex="0" (click)="openPeople(row)" (keydown.enter)="openPeople(row)">
+              <td>
+                <span class="title">{{ row.jobTitle }}</span>
+                <span class="sub">{{ row.department }}</span>
+              </td>
+              <td class="num">{{ row.headcount }}</td>
+              <td class="band-col" [pTooltip]="row.tooltip" tooltipPosition="top">
+                <app-pay-band [stats]="row.salary" [domain]="domain()" [label]="row.jobTitle + ': ' + row.tooltip" />
+              </td>
+              <td class="num strong">{{ row.median | money: currency() }}</td>
+              <td class="num">{{ row.average | money: currency() }}</td>
+              <td class="num hide-sm muted">{{ row.min | money: currency() }}</td>
+              <td class="num hide-sm muted">{{ row.max | money: currency() }}</td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr><td colspan="7" class="muted">No job titles in this department.</td></tr>
+          </ng-template>
+        </p-table>
+      </section>
+    } @else {
+      <div class="panel empty">No one is employed in {{ d.country.name }} yet.</div>
+    }
+  }
+</div>

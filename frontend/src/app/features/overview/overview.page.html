@@ -1,0 +1,141 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Pay overview</h1>
+      <p class="page-subtitle">
+        Annual base salary across ACME. Cross-country figures are converted to US dollars at reference
+        rates@if (loaded()) {<span> as of {{ ratesAsOf() }}</span>}.
+      </p>
+    </div>
+  </header>
+
+  @switch (view().state) {
+    @case ('error') {
+      <div class="panel empty-state" role="alert">
+        <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+        <p><strong>Pay data could not be loaded.</strong> The server may be restarting. Reload the page in a moment.</p>
+      </div>
+    }
+    @case ('loading') {
+      <div class="summary-strip" aria-busy="true">
+        @for (cell of [1, 2, 3, 4]; track cell) {
+          <div class="summary-cell"><p-skeleton width="5rem" height="0.75rem" /><p-skeleton width="8rem" height="1.5rem" styleClass="mt-1" /></div>
+        }
+      </div>
+      <div class="layout">
+        <div class="panel"><div class="skeleton-rows">@for (row of skeletonRows; track $index) { <p-skeleton height="1.75rem" /> }</div></div>
+        <div class="panel"><div class="skeleton-rows">@for (row of skeletonRows; track $index) { <p-skeleton height="1.75rem" /> }</div></div>
+      </div>
+    }
+  }
+
+  @if (loaded(); as data) {
+    @if (data.overview.headcount === 0) {
+      <div class="panel empty-state">
+        <i class="pi pi-users" aria-hidden="true"></i>
+        <p><strong>No employees yet.</strong> Add people from the <a routerLink="/people">People</a> page, or run <code>scripts/seed.sh</code> to load the demo workforce.</p>
+      </div>
+    } @else {
+      <dl class="summary-strip">
+        <div class="summary-cell">
+          <dt>People</dt>
+          <dd class="num-left">{{ data.overview.headcount.toLocaleString('en-US') }}<span class="summary-detail">in {{ data.overview.countryCount }} countries</span></dd>
+        </div>
+        <div class="summary-cell">
+          <dt>Annual payroll</dt>
+          <dd>{{ data.overview.totalPayrollUsd | usd: true }}<span class="summary-detail">base salary, converted to USD</span></dd>
+        </div>
+        <div class="summary-cell">
+          <dt>Median salary</dt>
+          <dd>{{ data.overview.medianSalaryUsd | usd }}<span class="summary-detail">half of ACME earns less than this</span></dd>
+        </div>
+        <div class="summary-cell">
+          <dt>Average salary</dt>
+          <dd>{{ data.overview.averageSalaryUsd | usd }}<span class="summary-detail">pulled up by the highest earners</span></dd>
+        </div>
+      </dl>
+
+      <div class="layout">
+        <section class="panel" aria-labelledby="by-country">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title" id="by-country">Pay by country</h2>
+              <p class="panel-note">Bands compare countries in USD. Select a country to break its pay down by job title in local currency.</p>
+            </div>
+            <app-band-legend />
+          </div>
+
+          <p-table [value]="data.countries" dataKey="countryCode" [rowHover]="true" styleClass="country-table">
+            <ng-template #header>
+              <tr>
+                <th>Country</th>
+                <th class="num">People</th>
+                <th class="band-col">Salary range <span class="muted">(≈ USD)</span></th>
+                <th class="num">Median</th>
+                <th class="num">Payroll</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-row>
+              <tr class="is-clickable" tabindex="0" (click)="openCountry(row.countryCode)" (keydown.enter)="openCountry(row.countryCode)"
+                  [attr.aria-label]="'Open pay for ' + row.countryName">
+                <td>
+                  <span class="country">
+                    <span class="code-tag">{{ row.countryCode }}</span>
+                    <span>
+                      <span class="country-name">{{ row.countryName }}</span>
+                      <span class="sub">{{ row.currencyCode }}</span>
+                    </span>
+                  </span>
+                </td>
+                <td class="num">{{ row.salary.headcount.toLocaleString('en-US') }}</td>
+                <td class="band-col" [pTooltip]="row.tooltip" tooltipPosition="top">
+                  <app-pay-band [stats]="row.usdBand" [domain]="domain()" [label]="row.countryName + ': ' + row.tooltip" />
+                </td>
+                <td class="num">
+                  {{ row.salary.median | money: row.currencyCode }}
+                  @if (row.currencyCode !== 'USD') {
+                    <span class="sub">{{ row.medianSalaryUsd | usd }}</span>
+                  }
+                </td>
+                <td class="num">{{ row.totalPayrollUsd | usd: true }}</td>
+              </tr>
+            </ng-template>
+            <ng-template #footer>
+              <tr class="axis-row">
+                <td colspan="2"></td>
+                <td class="band-col">
+                  <span class="axis"><span>{{ domain()[0] | money: 'USD': true }}</span><span>{{ domain()[1] | money: 'USD': true }}</span></span>
+                </td>
+                <td colspan="2"></td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </section>
+
+        <section class="panel" aria-labelledby="by-department">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title" id="by-department">Payroll by department</h2>
+              <p class="panel-note">Share of annual base payroll, in USD</p>
+            </div>
+          </div>
+          <ol class="departments">
+            @for (dept of data.overview.departments; track dept.department) {
+              <li>
+                <div class="dept-line">
+                  <span class="dept-name">{{ dept.department }}</span>
+                  <span class="dept-figure num">{{ dept.totalPayrollUsd | usd: true }}</span>
+                </div>
+                <div class="dept-bar" aria-hidden="true"><span [style.width.%]="barWidth(dept.totalPayrollUsd)"></span></div>
+                <div class="dept-meta">
+                  <span>{{ dept.headcount.toLocaleString('en-US') }} people · median {{ dept.medianSalaryUsd | usd }}</span>
+                  <span class="num">{{ share(dept.totalPayrollUsd).toFixed(1) }}%</span>
+                </div>
+              </li>
+            }
+          </ol>
+        </section>
+      </div>
+    }
+  }
+</div>
